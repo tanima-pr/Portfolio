@@ -1,30 +1,47 @@
-import { motion, useInView } from 'framer-motion'
-import { useRef } from 'react'
+"use client";
+import { motion } from 'framer-motion';
+import type { ReactNode, ElementType } from 'react';
 
 interface FadeInProps {
-  children: React.ReactNode
-  delay?: number
-  y?: number
-  x?: number
-  duration?: number
-  className?: string
+  children: ReactNode;
+  delay?: number;
+  duration?: number;
+  x?: number;
+  y?: number;
+  as?: ElementType;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
-const FadeIn = ({ children, delay = 0, y = 30, x = 0, duration = 0.7, className }: FadeInProps) => {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-80px' })
+const FadeIn = ({
+  children,
+  delay = 0,
+  duration = 0.7,
+  x = 0,
+  y = 30,
+  as = 'div',
+  className,
+  style,
+}: FadeInProps) => {
+  // motion.create() supports dynamic element types in framer-motion v12
+  const MotionComponent = motion.create(as);
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y, x }}
-      animate={isInView ? { opacity: 1, y: 0, x: 0 } : {}}
-      transition={{ duration, delay, ease: [0.25, 0.4, 0.25, 1] }}
+    <MotionComponent
+      initial={{ opacity: 0, x, y }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, margin: '50px', amount: 0 }}
+      transition={{
+        delay,
+        duration,
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
       className={className}
+      style={style}
     >
       {children}
-    </motion.div>
-  )
-}
+    </MotionComponent>
+  );
+};
 
-export default FadeIn
+export default FadeIn;
